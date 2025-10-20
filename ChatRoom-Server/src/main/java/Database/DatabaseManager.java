@@ -13,9 +13,9 @@ public class DatabaseManager {
         try {
             connection = DriverManager.getConnection(DB_URL);
             createTablesIfNotExist();
-            System.out.println("Database connected successfully.");
+            System.out.println("DB - Database connected successfully.");
         } catch (SQLException e) {
-            System.err.println("Database connection failed: " + e.getMessage());
+            System.err.println("DB - Database connection failed: " + e.getMessage());
         }
     }
 
@@ -33,9 +33,9 @@ public class DatabaseManager {
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createTableSQL);
-            System.out.println("User table created successfully");
+            System.out.println("DB - User table created successfully");
         } catch (SQLException e) {
-            System.err.println("Table creation fails :" + e.getMessage());
+            System.err.println("DB - Table creation fails :" + e.getMessage());
         }
     }
 
@@ -50,13 +50,12 @@ public class DatabaseManager {
             stmt.setString(3, passwordHash);
             stmt.setString(4, sender.getRegisteredTime().toString());
             stmt.executeUpdate();
-            System.out.println("User " + sender.getUsername() + " registered successfully.");
             return true;
         } catch (SQLException e) {
             if(e.getMessage().contains("UNIQUE constraint failed")) {
-                System.err.println("Registration failed: Username " + sender.getUsername() + " already exists.");
+                System.err.println("DB - Registration failed: Username " + sender.getUsername() + " already exists.");
             } else {
-                System.err.println("Registration failed: " + e.getMessage());
+                System.err.println("DB - Registration failed: " + e.getMessage());
             }
             return false;
         }
@@ -77,14 +76,12 @@ public class DatabaseManager {
                     updateStmt.setString(1, sender.getLastLoginTime().toString());
                     updateStmt.setString(2, sender.getUsername());
                     updateStmt.executeUpdate();
-                    System.out.println("User " + sender.getUsername() + " logged in successfully.");
                     return true;
                 }
             }
-            System.err.println("Login failed: Invalid username or password for user " + sender.getUsername());
             return false;
         }catch (SQLException e){
-            System.err.println("Login failed : " + e.getMessage());
+            System.err.println("DB - Unable to login: " + e.getMessage());
             return false;
         }
     }

@@ -1,8 +1,11 @@
 import Database.DatabaseManager;
+import Model.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,6 +15,7 @@ public class ChatServer {
     private ServerSocket serverSocket;
     private ExecutorService threadPool;
     private static boolean isRunning = true;
+    private static Map<String, ClientHandler> onlineClients = new ConcurrentHashMap<>();
 
     public ChatServer() {
         threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -21,17 +25,17 @@ public class ChatServer {
     public void start() {
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Chat server started on port " + PORT);
+            System.out.println("Server - Chat server started on port " + PORT);
 
             while (isRunning) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress());
+                System.out.println("Server - New client connected: " + clientSocket.getInetAddress());
                 ClientHandler clientHandler = new ClientHandler(clientSocket, this);
                 threadPool.execute(clientHandler);
             }
         } catch (IOException e) {
             if (isRunning) {
-                System.out.println("Error starting server: " + e.getMessage());
+                System.out.println("Server - Error starting server: " + e.getMessage());
             }
         } finally {
             shutdownAll();
@@ -45,10 +49,43 @@ public class ChatServer {
                 serverSocket.close();
             }
             threadPool.shutdown();
-            System.out.println("Server shut down.");
+            System.out.println("Server - Server shut down.");
         } catch (IOException e) {
-            System.out.println("Error closing server socket: " + e.getMessage());
+            System.out.println("Server - Error closing server socket: " + e.getMessage());
         }
+    }
+
+
+    public void addClient(String username, ClientHandler clientHandler) {
+        onlineClients.put(username, clientHandler);
+    }
+
+    public void removeClient(String username) {
+        onlineClients.remove(username);
+    }
+
+    public void broadcastMessage(Message message, String excludeUser) {
+        for (Map.Entry<String, ClientHandler> entry : onlineClients.entrySet()) {
+            if (!entry.getKey().equals(excludeUser)) {
+                entry.getValue().sendMessage(message);
+            }
+        }
+    }
+
+    public void broadcastToAll(Message message) {
+        for (ClientHandler clientHandler : onlineClients.values()) {
+            clientHandler.sendMessage(message);
+        }
+    }
+
+    public void notifyUserJoin(String username){
+        Message joinMessage = new Message(Message.MessageType.USER_JOIN, username + " has joined the chat.");
+        broadcastMessage(joinMessage, username);
+    }
+
+    public void notifyUserLeave(String username){
+        Message leaveMessage = new Message(Message.MessageType.USER_LEAVE, username + " has left the chat.");
+        broadcastMessage(leaveMessage, username);
     }
 
     public static void main(String[] args) {
