@@ -67,6 +67,8 @@ public class RegisterController {
             } else {
                 AlertWindow.showError("Registration Failed", response.getContent());
             }
+        } else {
+            AlertWindow.showError("Network Error", "No response from server. Please try again later.");
         }
     }
 }

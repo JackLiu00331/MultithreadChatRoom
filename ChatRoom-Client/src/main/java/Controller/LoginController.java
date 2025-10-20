@@ -1,12 +1,16 @@
 package Controller;
 
 import Application.SceneManager;
+import Model.Message;
+import Model.User;
 import Service.NetworkService;
 import Util.AlertWindow;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.time.LocalDateTime;
 
 public class LoginController {
     @FXML
@@ -38,13 +42,23 @@ public class LoginController {
             AlertWindow.showError("Login Error", "Username and password cannot be empty.");
             return;
         }
-
-        System.out.println("Username: " + username + ", Password: " + password);
-
-        try {
-            SceneManager.switchScene("chat-view", "Chat Room - " + username);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        User loginUser = new User(username, "", password);
+        loginUser.setLastLoginTime(LocalDateTime.now());
+        Message message = new Message(Message.MessageType.LOGIN, loginUser);
+        Message response = networkService.sendMessage(message);
+        if (response != null) {
+            if (response.getType() == Message.MessageType.LOGIN_SUCCESS) {
+                AlertWindow.showConfirm("Login Successful", "Welcome, " + username + "!");
+                try {
+                    SceneManager.switchScene("chat-view", "Chat Room - " + username);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                AlertWindow.showError("Login Failed", response.getContent());
+            }
+        } else {
+            AlertWindow.showError("Network Error", "No response from server. Please try again later.");
         }
     }
 

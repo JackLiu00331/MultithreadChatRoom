@@ -33,7 +33,7 @@ public class ClientHandler implements Runnable{
 
             }
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error initializing client handler: " + e.getMessage());
+            System.err.println("Error initializing client handler: " + e.getMessage());
         } finally {
             cleanUp();
         }
@@ -42,7 +42,24 @@ public class ClientHandler implements Runnable{
     private void handleClientMessage(Message message) {
         switch (message.getType()){
             case REGISTER -> handleRegister(message);
-            default -> System.out.println("Unknown message type received: " + message.getType());
+            case LOGIN -> handleLogin(message);
+            default -> System.err.println("Unknown message type received: " + message.getType());
+        }
+    }
+
+    private void handleLogin(Message message) {
+        boolean success = DatabaseManager.loginUser(message.getSender());
+        Message response;
+        if(success){
+            response = new Message(Message.MessageType.LOGIN_SUCCESS, "Login successful.");
+        }else {
+            response = new Message(Message.MessageType.LOGIN_FAILURE, "Login failed. Please check your credentials.");
+        }
+        try {
+            outputStream.writeObject(response);
+            outputStream.flush();
+        } catch (IOException e) {
+            System.err.println("Error sending login response: " + e.getMessage());
         }
     }
 
@@ -58,7 +75,7 @@ public class ClientHandler implements Runnable{
             outputStream.writeObject(response);
             outputStream.flush();
         } catch (IOException e) {
-            System.out.println("Error sending registration response: " + e.getMessage());
+            System.err.println("Error sending registration response: " + e.getMessage());
         }
     }
 
@@ -69,7 +86,7 @@ public class ClientHandler implements Runnable{
             if (clientSocket != null && !clientSocket.isClosed()) clientSocket.close();
             System.out.println("Client disconnected: " + clientSocket.getInetAddress());
         } catch (IOException e) {
-            System.out.println("Error closing client connection: " + e.getMessage());
+            System.err.println("Error closing client connection: " + e.getMessage());
         }
     }
 }

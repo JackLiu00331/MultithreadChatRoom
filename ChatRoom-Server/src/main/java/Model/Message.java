@@ -1,8 +1,10 @@
 package Model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Message implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public enum MessageType {
@@ -14,6 +16,9 @@ public class Message implements Serializable {
         REGISTER_FAILURE,
         CHAT,
         USER_LIST,
+        REQUEST_USER_LIST,
+        USER_JOIN,
+        USER_LEAVE,
         LOGOUT
     }
 
