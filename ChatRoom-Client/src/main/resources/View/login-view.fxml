@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.LoginController">
+   <children>
+      <VBox alignment="CENTER" layoutX="258.0" layoutY="47.0" prefHeight="400.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER" text="Username:">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="usernameField" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER" text="Password:">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <PasswordField fx:id="passwordField" />
+               </children></HBox>
+            <Button fx:id="submitBtn" mnemonicParsing="false" onAction="#handleLogin" prefHeight="47.0" prefWidth="145.0" text="Login">
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-lg" />
+                  <String fx:value="btn-success" />
+               </styleClass>
+            </Button>
+            <Button fx:id="registerBtn" mnemonicParsing="false" onAction="#handleRegister" prefHeight="47.0" prefWidth="145.0" text="Register">
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-lg" />
+                  <String fx:value="btn-primary" />
+               </styleClass>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
