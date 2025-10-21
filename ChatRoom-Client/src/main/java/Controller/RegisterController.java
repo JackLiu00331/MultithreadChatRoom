@@ -55,7 +55,7 @@ public class RegisterController {
 
         User newUser = new User(username, name, password);
         Message message = new Message(Message.MessageType.REGISTER, newUser);
-        Message response = networkService.sendMessage(message);
+        Message response = networkService.sendAndWait(message);
         if (response != null) {
             if(response.getType() == Message.MessageType.REGISTER_SUCCESS) {
                 AlertWindow.showConfirm("Registration Successful", response.getContent());

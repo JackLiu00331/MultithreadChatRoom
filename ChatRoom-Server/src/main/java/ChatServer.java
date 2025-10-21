@@ -1,10 +1,13 @@
 import Database.DatabaseManager;
 import Model.Message;
+import Model.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,16 +83,29 @@ public class ChatServer {
 
     public void notifyUserJoin(String username){
         Message joinMessage = new Message(Message.MessageType.USER_JOIN, username + " has joined the chat.");
-        broadcastMessage(joinMessage, username);
+        System.out.println(joinMessage.getContent());
+        broadcastToAll(joinMessage);
+        broadcastUserList();
     }
 
     public void notifyUserLeave(String username){
         Message leaveMessage = new Message(Message.MessageType.USER_LEAVE, username + " has left the chat.");
         broadcastMessage(leaveMessage, username);
+        broadcastUserList();
     }
 
     public static void main(String[] args) {
         ChatServer chatServer = new ChatServer();
         chatServer.start();
+    }
+
+    public Set<String> getOnlineUsers() {
+        return new HashSet<>(onlineClients.keySet());
+    }
+
+    public void broadcastUserList() {
+        Message userListMessage = new Message(Message.MessageType.USER_LIST);
+        userListMessage.setExtraData(getOnlineUsers());
+        broadcastToAll(userListMessage);
     }
 }

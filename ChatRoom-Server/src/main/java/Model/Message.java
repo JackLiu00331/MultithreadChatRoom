@@ -19,7 +19,8 @@ public class Message implements Serializable {
         REQUEST_USER_LIST,
         USER_JOIN,
         USER_LEAVE,
-        LOGOUT
+        LOGOUT,
+        CHAT_ROOM_READY
     }
 
     private MessageType type;

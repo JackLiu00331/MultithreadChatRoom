@@ -16,6 +16,11 @@ public class User implements Serializable {
     private LocalDateTime registeredTime;
     private LocalDateTime lastLoginTime;
 
+    public User(String username, String nickname) {
+        this.username = username;
+        this.nickname = nickname;
+    }
+
     public User(String username, String nickname, String password) {
         this.username = username;
         this.nickname = nickname;

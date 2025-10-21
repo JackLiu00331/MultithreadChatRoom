@@ -85,4 +85,23 @@ public class DatabaseManager {
             return false;
         }
     }
+
+    public static User getUserByUsername(String username) {
+        String querySQL = "SELECT * FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(querySQL)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                        rs.getString("username"),
+                        rs.getString("nickname")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("DB - Unable to retrieve user: " + e.getMessage());
+        }
+        return null;
+    }
 }
